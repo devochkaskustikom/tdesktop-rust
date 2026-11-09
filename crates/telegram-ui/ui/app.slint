@@ -1,0 +1,70 @@
+import { ListView } from "std-widgets.slint";
+
+export struct ChatRow {
+    initials: string,
+    name: string,
+    last: string,
+}
+
+export component AppWindow inherits Window {
+    in property <[ChatRow]> rows;
+    in property <string> sample-text;
+
+    title: "Telegram UI prototype";
+    preferred-width: 420px;
+    preferred-height: 720px;
+    background: #ffffff;
+
+    VerticalLayout {
+        Text {
+            text: root.sample-text;
+            font-size: 16px;
+            color: #222222;
+            height: 44px;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        ListView {
+            for row in root.rows: Rectangle {
+                height: 64px;
+                HorizontalLayout {
+                    padding: 12px;
+                    spacing: 12px;
+
+                    Rectangle {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 20px;
+                        background: #3390ec;
+                        Text {
+                            text: row.initials;
+                            color: #ffffff;
+                            font-size: 14px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: 2px;
+                        Text {
+                            text: row.name;
+                            font-size: 15px;
+                            font-weight: 600;
+                            color: #000000;
+                            overflow: elide;
+                        }
+                        Text {
+                            text: row.last;
+                            font-size: 13px;
+                            color: #707579;
+                            overflow: elide;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
