@@ -1,0 +1,25 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/telegram-core",
+    "crates/telegram-app",
+    "crates/telegram-ui",
+    "crates/telegram-webapp",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[workspace.dependencies]
+anyhow = "1"
+tdlib-rs = { version = "1.4", features = ["download-tdlib"] }
+telegram-core = { path = "crates/telegram-core" }
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
