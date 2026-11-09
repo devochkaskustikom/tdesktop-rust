@@ -1,5 +1,3 @@
-import { ListView } from "std-widgets.slint";
-
 export struct ChatRow {
     initials: string,
     name: string,
@@ -7,8 +5,25 @@ export struct ChatRow {
 }
 
 export component AppWindow inherits Window {
-    in property <[ChatRow]> rows;
+    in property <[ChatRow]> window-rows;
+    in property <int> total-rows;
+    in-out property <int> window-first: 0;
     in property <string> sample-text;
+
+    callback window-needed(int);
+
+    property <length> row-h: 64px;
+    property <length> scroll: 0px;
+    property <length> content-h: root.total-rows * root.row-h / 1px * 1px;
+    property <length> view-h: list.height;
+    property <length> max-scroll: max(0px, root.content-h - root.view-h);
+    property <int> wanted-first: max(0, floor(root.scroll / root.row-h) - 2);
+
+    changed wanted-first => {
+        if root.wanted-first != root.window-first {
+            root.window-needed(root.wanted-first);
+        }
+    }
 
     title: "Telegram UI prototype";
     preferred-width: 420px;
@@ -25,9 +40,14 @@ export component AppWindow inherits Window {
             vertical-alignment: center;
         }
 
-        ListView {
-            for row in root.rows: Rectangle {
-                height: 64px;
+        list := Rectangle {
+            clip: true;
+
+            for row[index] in root.window-rows: Rectangle {
+                y: (root.window-first + index) * root.row-h - root.scroll;
+                height: root.row-h;
+                width: list.width;
+
                 HorizontalLayout {
                     padding: 12px;
                     spacing: 12px;
@@ -63,6 +83,32 @@ export component AppWindow inherits Window {
                             overflow: elide;
                         }
                     }
+                }
+            }
+
+            Rectangle {
+                x: list.width - 10px;
+                width: 6px;
+                background: #00000010;
+                border-radius: 3px;
+                visible: root.max-scroll > 0px;
+
+                Rectangle {
+                    y: root.max-scroll > 0px ? (root.scroll / root.max-scroll) * (list.height - self.height) : 0px;
+                    height: max(40px, list.height * (list.height / root.content-h));
+                    width: parent.width;
+                    background: #00000050;
+                    border-radius: 3px;
+                }
+            }
+
+            TouchArea {
+                scroll-event(event) => {
+                    if event.delta-y == 0px {
+                        return reject;
+                    }
+                    root.scroll = max(0px, min(root.max-scroll, root.scroll - event.delta-y));
+                    return accept;
                 }
             }
         }
