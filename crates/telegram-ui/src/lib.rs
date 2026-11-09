@@ -30,7 +30,9 @@ pub fn run_prototype() -> Result<(), slint::PlatformError> {
 fn show_window(window: &AppWindow, rows: &[ChatRow], first: usize) {
     let start = first.min(rows.len().saturating_sub(WINDOW_ROWS));
     let end = (start + WINDOW_ROWS).min(rows.len());
-    window.set_window_rows(slint::ModelRc::new(slint::VecModel::from(rows[start..end].to_vec())));
+    window.set_window_rows(slint::ModelRc::new(slint::VecModel::from(
+        rows[start..end].to_vec(),
+    )));
     window.set_window_first(start as i32);
 }
 
